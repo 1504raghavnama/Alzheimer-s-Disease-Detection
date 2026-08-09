@@ -140,15 +140,9 @@ A **stratified two-stage split** was implemented using `train_test_split()` with
 | **Testing** | 5,098 | Final evaluation on unseen data |
 | **Total** | **33,984** | |
 
-### 🔄 Preprocessing Strategy
+### 🔄 Data Partitioning Strategy
 
-- **Image Resizing:** All MRI images are resized to `128 × 128` pixels.
-- **Normalization:** Pixel intensities are rescaled from `0–255` to `0–1`.
-- **Training Augmentation:** Random rotation, zoom, and horizontal flipping are applied to increase training-data diversity.
-- **Validation/Test Processing:** Only resizing and normalization are applied to prevent artificial modifications during evaluation.
-- **Batch Processing:** Images are loaded through TensorFlow/Keras `ImageDataGenerator` with a batch size of `32`.
-
-The test set remains completely isolated from model training and is used only after training is completed for unbiased performance evaluation.
+The test set remains completely isolated from model training and is used only for final evaluation on unseen data. Image preprocessing and augmentation are described in the dedicated preprocessing section below.
 ---
 
 # 🧪 Image Preprocessing & Augmentation
@@ -264,25 +258,25 @@ Alzheimer's Class
 ---
 # ⚙️ Training Configuration
 
-The models were trained using TensorFlow/Keras with a configuration designed for stable optimization and controlled generalization.
+The baseline CNN and ResNet50 transfer-learning model use separate optimization configurations suited to their respective training strategies.
 
-| Configuration | Setting |
-|---|---|
-| **Framework** | TensorFlow / Keras |
-| **Input Shape** | `128 × 128 × 3` |
-| **Batch Size** | `32` |
-| **Maximum Epochs** | `20` |
-| **Optimizer** | Adam |
-| **Learning Rate** | `0.0001` |
-| **Loss Function** | Categorical Cross-Entropy |
-| **Output Activation** | Softmax |
-| **Number of Classes** | `4` |
+| Configuration | Baseline CNN | ResNet50 |
+|---|---:|---:|
+| **Input Shape** | `128 × 128 × 3` | `128 × 128 × 3` |
+| **Optimizer** | Adam | Adam |
+| **Learning Rate** | `0.001` | `0.0001` |
+| **Loss Function** | Categorical Cross-Entropy | Categorical Cross-Entropy |
+| **Output Activation** | Softmax | Softmax |
+| **Number of Classes** | `4` | `4` |
 
-### 🛡️ Training Controls
+### 🛡️ ResNet50 Training Controls
 
-#### EarlyStopping
+The ResNet50 training process uses two callbacks:
 
-`EarlyStopping` monitors validation performance during training and prevents unnecessary additional epochs when the model stops improving. The callback also restores the best-performing model weights.
+- **EarlyStopping:** `patience=5` with `restore_best_weights=True`.
+- **ReduceLROnPlateau:** `factor=0.5` with `patience=3`.
+
+The transfer-learning model is trained for up to **20 epochs**, with validation data used to monitor model performance during training.
 
 #### ReduceLROnPlateau
 
@@ -378,16 +372,13 @@ The model demonstrates strong class-separation capability with a **0.9273 macro 
 
 The difference in class-wise performance highlights the difficulty of distinguishing subtle patterns associated with the very mild stage and motivates further investigation into class-aware training strategies and more advanced architectures.
 ---
-# 🛠️ Tech Stack
-
-### Programming & Deep Learning
 
 # 🛠️ Tech Stack
 
 | Category | Technologies |
 |---|---|
 | **Language** | Python |
-| **Deep Learning** | TensorFlow, Keras |
+| **Deep Learning** | TensorFlow |
 | **Models** | CNN, ResNet50, Transfer Learning |
 | **Data Processing** | NumPy, Pandas |
 | **Machine Learning / Evaluation** | Scikit-learn |
