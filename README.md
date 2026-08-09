@@ -156,3 +156,38 @@ The project follows an end-to-end medical image classification pipeline, startin
         ▼               ▼                ▼
     Classification   Confusion        ROC-AUC
       Metrics         Matrix           Curves
+```
+
+---
+
+# 🧪 Image Preprocessing & Augmentation
+
+Before being passed to the neural networks, MRI images undergo a standardized preprocessing pipeline to ensure consistent input dimensions and normalized pixel values.
+
+### 🖼️ Image Preprocessing
+
+| Operation | Configuration | Purpose |
+|---|---|---|
+| **Resizing** | `128 × 128` | Standardizes image dimensions |
+| **Rescaling** | `1./255` | Converts pixel values from `0–255` to `0–1` |
+| **Batching** | `32 images/batch` | Enables memory-efficient mini-batch training |
+
+### 🔄 Training Data Augmentation
+
+The training generator applies controlled transformations to increase input diversity and improve model generalization:
+
+- **Rotation:** Up to `20°`
+- **Zoom:** Up to `20%`
+- **Horizontal Flip:** Random horizontal transformations
+- **Normalization:** Pixel-value rescaling to `[0, 1]`
+
+These transformations generate varied versions of training samples without modifying the original dataset.
+
+### 🧪 Validation & Test Processing
+
+Validation and test images undergo **only resizing and normalization**. Augmentation is intentionally excluded from these datasets so that model performance is measured on data that has not been artificially transformed.
+
+The preprocessing pipeline is implemented using TensorFlow/Keras `ImageDataGenerator` and `flow_from_dataframe()`.
+
+---
+
