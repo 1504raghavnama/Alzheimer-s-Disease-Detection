@@ -1,81 +1,125 @@
-# 🧠 Alzheimer’s Disease Detection Using Deep Learning
+# 🧠 Alzheimer's Disease Detection Using Deep Learning
+
+<p align="center">
+  <img src="assets/alzheimers-banner.png" alt="Alzheimer's Disease Detection" width="850"/>
+</p>
+
+<p align="center">
+  <b>Multi-Class Brain MRI Classification using CNNs and ResNet50 Transfer Learning</b>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.x-blue?logo=python"/>
+  <img src="https://img.shields.io/badge/TensorFlow-2.x-orange?logo=tensorflow"/>
+  <img src="https://img.shields.io/badge/Keras-Deep%20Learning-red?logo=keras"/>
+  <img src="https://img.shields.io/badge/Scikit--Learn-Metrics-F7931E?logo=scikit-learn"/>
+  <img src="https://img.shields.io/badge/Computer%20Vision-MRI-purple"/>
+  <img src="https://img.shields.io/badge/Medical%20AI-Research-green"/>
+</p>
+
+---
 
 ## 📌 Project Overview
-This project focuses on the automated detection of Alzheimer’s Disease from brain MRI scans using deep learning techniques. The system classifies MRI images into clinically relevant stages, enabling early diagnosis support and scalable medical decision assistance.
 
-The model leverages Convolutional Neural Networks (CNNs) to extract spatial features from MRI data and learn disease-specific patterns with high reliability.
+This project develops a deep learning-based system for **multi-class classification of Alzheimer's-related dementia stages from brain MRI images**.
 
----
+The project implements and compares two approaches:
 
-## 🧠 Problem Statement
-Alzheimer’s Disease is a progressive neurodegenerative disorder where early detection is critical but challenging due to subtle anatomical changes in brain structure. Traditional diagnosis methods are time-consuming and subjective. This project aims to develop an automated, data-driven solution to assist clinicians with accurate and early-stage detection.
+1. **Baseline Convolutional Neural Network (CNN)** built from scratch.
+2. **ResNet50 Transfer Learning** using ImageNet-pretrained weights with partial fine-tuning and a custom classification head.
 
----
+The complete workflow covers dataset organization, stratified data splitting, image preprocessing, augmentation, generator-based training, transfer learning, model optimization, and comprehensive evaluation using class-wise and multi-class performance metrics.
 
-## 🚀 Key Features
-- Multi-class classification of Alzheimer’s stages from MRI scans  
-- Automated feature extraction using CNN architecture  
-- Robust preprocessing pipeline for medical imaging data  
-- Scalable and reproducible training workflow  
+> **Note:** This project is intended as a machine learning research/educational system and should not be considered a clinically validated diagnostic tool.
 
 ---
 
-## 🗂 Dataset Information
-- **Dataset Type:** Brain MRI Images  
-- **Classes:**  
-  - Non-Demented  
-  - Very Mild Demented  
-  - Mild Demented  
-  - Moderate Demented  
+## 🎯 Problem Statement
 
-- **Total Images:** ~6,400+ MRI scans  
-- **Image Format:** JPEG / PNG  
-- **Data Split:**  
-  - Training: 70%  
-  - Validation: 15%  
-  - Testing: 15%  
+Alzheimer's disease is a progressive neurodegenerative condition associated with structural changes in the brain. Distinguishing different stages from MRI scans can be challenging because the visual differences between certain classes can be subtle.
 
----
+The objective of this project is to investigate whether deep learning models can automatically learn discriminative spatial patterns from brain MRI images and classify them into four Alzheimer's-related categories.
 
-## 🧠 Model Architecture
-- **Base Architecture:** Convolutional Neural Network (CNN)  
-- **Layers Used:**  
-  - Convolution + ReLU  
-  - Max Pooling  
-  - Dropout (to reduce overfitting)  
-  - Fully Connected Dense Layers  
+### Classification Classes
 
-- **Loss Function:** Categorical Cross-Entropy  
-- **Optimizer:** Adam  
+| Class | Description |
+|---|---|
+| 🟢 **NonDemented** | MRI scans without dementia classification |
+| 🟡 **VeryMildDemented** | Very mild dementia stage |
+| 🟠 **MildDemented** | Mild dementia stage |
+| 🔴 **ModerateDemented** | Moderate dementia stage |
 
 ---
 
-## 📊 Performance Snapshot
-- **Training Accuracy:** ~96–98%  
-- **Validation Accuracy:** ~93–95%  
-- **Inference Time:** < 50 ms per image  
-- **Overfitting Control:** Dropout + Data Augmentation  
+# 🗂️ Dataset
 
+The dataset consists of **33,984 brain MRI images** distributed across four classes.
+
+### Class Distribution
+
+| Class | Images |
+|---|---:|
+| NonDemented | 9,600 |
+| MildDemented | 8,960 |
+| VeryMildDemented | 8,960 |
+| ModerateDemented | 6,464 |
+| **Total** | **33,984** |
+
+The images are organized into class-specific directories and converted into a structured Pandas DataFrame containing image file paths and corresponding class labels.
 
 ---
 
-## 🛠 Tech Stack
-- **Programming Language:** Python  
-- **Frameworks & Libraries:**  
-  - TensorFlow / Keras  
-  - NumPy  
-  - Pandas  
-  - Matplotlib  
-  - OpenCV
+## 📊 Dataset Visualization
 
-## ⚙️ Installation & Setup
+<p align="center">
+  <img src="assets/sample_mri_images.png" alt="Sample MRI Images" width="900"/>
+</p>
 
-```bash
-git clone https://github.com/your-username/alzheimer-detection.git
-cd alzheimer-detection
-pip install -r requirements.txt
-```
+The visualization step verifies that MRI images are loaded correctly and that the corresponding class labels are mapped properly before model training.
+
 ---
 
-## 📈 Results Summary
-The deep learning model successfully learns discriminative spatial patterns from brain MRI scans corresponding to different stages of Alzheimer’s Disease. The training process shows stable convergence with high classification confidence across classes, indicating strong feature representation and robustness. Overall, the results validate the effectiveness of CNN-based approaches for automated Alzheimer’s disease detection and medical image analysis.
+# 🔬 Machine Learning Pipeline
+
+```text
+                 Brain MRI Dataset
+                        │
+                        ▼
+              Dataset Organization
+                        │
+                        ▼
+              Pandas DataFrame
+             ┌──────────┴──────────┐
+             │                     │
+             ▼                     ▼
+      Image File Paths          Labels
+             │                     │
+             └──────────┬──────────┘
+                        ▼
+              Stratified Splitting
+                        │
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+     Training       Validation         Test
+        │               │               │
+        ▼               ▼               ▼
+ Image Augmentation   Rescaling       Rescaling
+        │
+        ▼
+ ImageDataGenerator
+        │
+        ▼
+ ┌──────────────────────────────┐
+ │                              │
+ ▼                              ▼
+Baseline CNN             ResNet50 Transfer
+                         Learning + Fine-Tuning
+ │                              │
+ └──────────────┬───────────────┘
+                ▼
+          Model Evaluation
+                │
+                ▼
+ Accuracy • Precision • Recall
+ F1-score • Confusion Matrix
+ ROC-AUC • ROC Curves
