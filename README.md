@@ -21,16 +21,12 @@
 
 ## 📌 Project Overview
 
-This project develops a deep learning-based system for **multi-class classification of Alzheimer's-related dementia stages from brain MRI images**.
+This project implements a deep learning–based system for **4-class Alzheimer's disease classification from brain MRI images**. Two approaches are developed and evaluated:
 
-The project implements and compares two approaches:
+- **Baseline CNN** trained directly on the MRI dataset.
+- **ResNet50 Transfer Learning** using ImageNet-pretrained weights with partial fine-tuning.
 
-1. **Baseline Convolutional Neural Network (CNN)** built from scratch.
-2. **ResNet50 Transfer Learning** using ImageNet-pretrained weights with partial fine-tuning and a custom classification head.
-
-The complete workflow covers dataset organization, stratified data splitting, image preprocessing, augmentation, generator-based training, transfer learning, model optimization, and comprehensive evaluation using class-wise and multi-class performance metrics.
-
-> **Note:** This project is intended as a machine learning research/educational system and should not be considered a clinically validated diagnostic tool.
+The pipeline includes image preprocessing, data augmentation, model training, validation, and multi-class performance evaluation using accuracy, precision, recall, F1-score, confusion matrix, classification report, and ROC-AUC.
 
 ---
 
@@ -51,21 +47,18 @@ The objective of this project is to investigate whether deep learning models can
 
 ---
 
-# 🗂️ Dataset
+## 📊 Dataset
 
-The dataset consists of **33,984 brain MRI images** distributed across four classes.
+The project performs multi-class classification of brain MRI images into four categories:
 
-### Class Distribution
+| Class | Description |
+|---|---|
+| `NonDemented` | Non-demented |
+| `VeryMildDemented` | Very mild dementia |
+| `MildDemented` | Mild dementia |
+| `ModerateDemented` | Moderate dementia |
 
-| Class | Images |
-|---|---:|
-| NonDemented | 9,600 |
-| MildDemented | 8,960 |
-| VeryMildDemented | 8,960 |
-| ModerateDemented | 6,464 |
-| **Total** | **33,984** |
-
-The images are organized into class-specific directories and converted into a structured Pandas DataFrame containing image file paths and corresponding class labels.
+The model evaluation uses **5,098 test samples**.
 ---
 
 ## 📊 Dataset Visualization
@@ -160,37 +153,39 @@ The test set remains completely isolated from model training and is used only af
 
 # 🧪 Image Preprocessing & Augmentation
 
-Before being passed to the neural networks, MRI images undergo a standardized preprocessing pipeline to ensure consistent input dimensions and normalized pixel values.
+The MRI images are processed through TensorFlow/Keras `ImageDataGenerator` pipelines before being supplied to the models. The preprocessing pipeline standardizes image dimensions, normalizes pixel intensities, and applies augmentation to the training data.
 
-### 🖼️ Image Preprocessing
+### 🖼️ Preprocessing Configuration
 
-| Operation | Configuration | Purpose |
-|---|---|---|
-| **Resizing** | `128 × 128` | Standardizes image dimensions |
-| **Rescaling** | `1./255` | Converts pixel values from `0–255` to `0–1` |
-| **Batching** | `32 images/batch` | Enables memory-efficient mini-batch training |
+| Operation | Configuration |
+|---|---|
+| **Image Size** | `128 × 128` |
+| **Batch Size** | `32` |
+| **Pixel Rescaling** | `1./255` |
+| **Class Mode** | `categorical` |
+| **Data Loader** | `flow_from_dataframe()` |
 
-### 🔄 Training Data Augmentation
+### 🔄 Training Augmentation
 
-The training generator applies controlled transformations to increase input diversity and improve model generalization:
+The training generator applies the following transformations:
 
 - **Rotation:** Up to `20°`
-- **Zoom:** Up to `20%`
-- **Horizontal Flip:** Random horizontal transformations
-- **Normalization:** Pixel-value rescaling to `[0, 1]`
+- **Zoom:** `0.2`
+- **Horizontal Flip:** Enabled
+- **Pixel Rescaling:** `1./255`
 
-These transformations generate varied versions of training samples without modifying the original dataset.
+These transformations increase the diversity of training inputs while retaining the original class labels.
 
 ### 🧪 Validation & Test Processing
 
-Validation and test images undergo **only resizing and normalization**. Augmentation is intentionally excluded from these datasets so that model performance is measured on data that has not been artificially transformed.
+Validation and test images are **only rescaled using `1./255`** and are not augmented. This ensures that model evaluation is performed on consistently preprocessed images without introducing artificial transformations.
 
-The preprocessing pipeline is implemented using TensorFlow/Keras `ImageDataGenerator` and `flow_from_dataframe()`.
+The test generator uses `shuffle=False` so that the generated predictions remain aligned with the original test-data ordering during evaluation.
 ---
 
 # 🧠 Baseline CNN
 
-A custom **Convolutional Neural Network (CNN)** was developed from scratch to establish a baseline for the Alzheimer's MRI classification task. The architecture performs hierarchical feature extraction through convolution and pooling layers, followed by fully connected layers for four-class classification.
+A custom **Convolutional Neural Network (CNN)** was developed from scratch to establish a baseline for the Alzheimer's MRI classification task. The model learns hierarchical spatial features through successive convolution and pooling operations before performing four-class classification through fully connected layers.
 
 ### 🏗️ Architecture
 
@@ -232,7 +227,7 @@ Alzheimer's Class
 
 # 🚀 ResNet50 Transfer Learning
 
-To improve upon the baseline CNN, the project uses **ResNet50 with ImageNet-pretrained weights** as the feature extraction backbone. Transfer learning allows the model to reuse visual representations learned from a large-scale image dataset and adapt them to the Alzheimer's MRI classification task.
+To improve upon the baseline CNN, the project uses **ResNet50 with ImageNet-pretrained weights** for transfer learning. The pretrained convolutional backbone is adapted to the Alzheimer's MRI classification task through partial fine-tuning and a custom classification head.
 
 ### 🏗️ Architecture
 
@@ -241,7 +236,8 @@ Input MRI
 128 × 128 × 3
       │
       ▼
-ImageNet-Pretrained ResNet50
+ResNet50
+ImageNet-Pretrained Weights
       │
       ▼
 Partial Fine-Tuning
@@ -251,7 +247,7 @@ Last 10 Layers Trainable
 Flatten
       │
       ▼
-Dense Layer
+Dense
 256 Neurons • ReLU
       │
       ▼
@@ -259,7 +255,7 @@ Dropout
 0.5
       │
       ▼
-Dense Layer
+Dense
 4 Neurons • Softmax
       │
       ▼
