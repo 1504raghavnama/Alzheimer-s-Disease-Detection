@@ -69,6 +69,33 @@ The images are organized into class-specific directories and converted into a st
 
 ---
 
+# ⚙️ Data Preparation
+
+The MRI dataset was transformed into a structured **Pandas DataFrame** containing image file paths and their corresponding class labels. This tabular representation was then used to construct the training, validation, and test pipelines.
+
+### 📊 Dataset Partition
+
+A **stratified two-stage split** was implemented using `train_test_split()` with a fixed random seed to preserve class proportions across the datasets.
+
+| Dataset | Images | Purpose |
+|---|---:|---|
+| **Training** | 24,553 | Model parameter learning |
+| **Validation** | 4,333 | Hyperparameter tuning and generalization monitoring |
+| **Testing** | 5,098 | Final evaluation on unseen data |
+| **Total** | **33,984** | |
+
+### 🔄 Preprocessing Strategy
+
+- **Image Resizing:** All MRI images are resized to `128 × 128` pixels.
+- **Normalization:** Pixel intensities are rescaled from `0–255` to `0–1`.
+- **Training Augmentation:** Random rotation, zoom, and horizontal flipping are applied to increase training-data diversity.
+- **Validation/Test Processing:** Only resizing and normalization are applied to prevent artificial modifications during evaluation.
+- **Batch Processing:** Images are loaded through TensorFlow/Keras `ImageDataGenerator` with a batch size of `32`.
+
+The test set remains completely isolated from model training and is used only after training is completed for unbiased performance evaluation.
+
+---
+
 ## 📊 Dataset Visualization
 
 The visualization step verifies that MRI images are loaded correctly and that the corresponding class labels are mapped properly before model training.
