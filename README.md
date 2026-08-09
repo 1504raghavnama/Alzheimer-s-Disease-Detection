@@ -186,6 +186,199 @@ These transformations generate varied versions of training samples without modif
 Validation and test images undergo **only resizing and normalization**. Augmentation is intentionally excluded from these datasets so that model performance is measured on data that has not been artificially transformed.
 
 The preprocessing pipeline is implemented using TensorFlow/Keras `ImageDataGenerator` and `flow_from_dataframe()`.
+---
+
+# 🧠 Baseline CNN
+
+A custom **Convolutional Neural Network (CNN)** was developed from scratch to establish a baseline for the Alzheimer's MRI classification task. The architecture performs hierarchical feature extraction through convolution and pooling layers, followed by fully connected layers for four-class classification.
+
+### 🏗️ Architecture
+
+```text
+Input MRI
+128 × 128 × 3
+      │
+      ▼
+Conv2D
+32 Filters • 3 × 3 Kernel • ReLU
+      │
+      ▼
+MaxPooling2D
+2 × 2 Pool
+      │
+      ▼
+Conv2D
+64 Filters • 3 × 3 Kernel • ReLU
+      │
+      ▼
+MaxPooling2D
+2 × 2 Pool
+      │
+      ▼
+Flatten
+      │
+      ▼
+Dense
+128 Neurons • ReLU
+      │
+      ▼
+Dense
+4 Neurons • Softmax
+      │
+      ▼
+Alzheimer's Class
+```
+---
+
+# 🚀 ResNet50 Transfer Learning
+
+To improve upon the baseline CNN, the project uses **ResNet50 with ImageNet-pretrained weights** as the feature extraction backbone. Transfer learning allows the model to reuse visual representations learned from a large-scale image dataset and adapt them to the Alzheimer's MRI classification task.
+
+### 🏗️ Architecture
+
+```text
+Input MRI
+128 × 128 × 3
+      │
+      ▼
+ImageNet-Pretrained ResNet50
+      │
+      ▼
+Partial Fine-Tuning
+Last 10 Layers Trainable
+      │
+      ▼
+Flatten
+      │
+      ▼
+Dense Layer
+256 Neurons • ReLU
+      │
+      ▼
+Dropout
+0.5
+      │
+      ▼
+Dense Layer
+4 Neurons • Softmax
+      │
+      ▼
+Alzheimer's Class
+```
+---
+# ⚙️ Training Configuration
+
+The models were trained using TensorFlow/Keras with a configuration designed for stable optimization and controlled generalization.
+
+| Configuration | Setting |
+|---|---|
+| **Framework** | TensorFlow / Keras |
+| **Input Shape** | `128 × 128 × 3` |
+| **Batch Size** | `32` |
+| **Maximum Epochs** | `20` |
+| **Optimizer** | Adam |
+| **Learning Rate** | `0.0001` |
+| **Loss Function** | Categorical Cross-Entropy |
+| **Output Activation** | Softmax |
+| **Number of Classes** | `4` |
+
+### 🛡️ Training Controls
+
+#### EarlyStopping
+
+`EarlyStopping` monitors validation performance during training and prevents unnecessary additional epochs when the model stops improving. The callback also restores the best-performing model weights.
+
+#### ReduceLROnPlateau
+
+`ReduceLROnPlateau` dynamically decreases the learning rate when validation performance reaches a plateau. This enables smaller optimization steps during later stages of training and helps the model continue refining its parameters.
+
+### 🔄 Model Training Strategy
+
+The **baseline CNN** is trained from scratch to establish a reference point, while the **ResNet50 model** starts from ImageNet-pretrained representations and performs partial fine-tuning on the MRI dataset.
+
+The same validation pipeline is used to monitor generalization throughout training, while the held-out test set remains untouched until the final evaluation stage.
 
 ---
 
+# 🧪 Model Evaluation
+
+After training, the final ResNet50 model is evaluated exclusively on the **5,098-image held-out test set**. The evaluation pipeline generates class predictions and probability scores, which are then used to assess both overall performance and class-specific behavior.
+
+### 📊 Evaluation Metrics
+
+The model is evaluated using multiple complementary metrics:
+
+| Metric | Purpose |
+|---|---|
+| **Accuracy** | Measures the overall proportion of correctly classified MRI images |
+| **Precision** | Measures the correctness of positive predictions for each class |
+| **Recall** | Measures how effectively samples from each class are identified |
+| **F1-score** | Provides a balance between precision and recall |
+| **Confusion Matrix** | Analyzes class-wise correct and incorrect predictions |
+| **ROC-AUC** | Measures the model's ability to discriminate between classes across thresholds |
+
+### 🔲 Confusion Matrix — Prediction Counts
+
+The raw confusion matrix shows the number of test samples assigned to each predicted class compared with their actual class.
+
+<p align="center">
+  <img src="assets/confusion_matrix_counts.png" alt="Confusion Matrix Counts" width="700"/>
+</p>
+
+### 🔲 Normalized Confusion Matrix
+
+The normalized confusion matrix represents class-wise prediction proportions, making it easier to compare classification behavior across classes with different sample distributions.
+
+<p align="center">
+  <img src="assets/confusion_matrix_normalized.png" alt="Normalized Confusion Matrix" width="700"/>
+</p>
+
+### 📈 Multi-Class ROC Analysis
+
+A **One-vs-Rest (OvR)** strategy is used to generate ROC curves for the four Alzheimer's-related classes. The ROC-AUC metric evaluates how effectively the model separates each class from the remaining classes across different classification thresholds.
+
+<p align="center">
+  <img src="assets/roc_curves.png" alt="Multi-Class ROC Curves" width="850"/>
+</p>
+
+This multi-level evaluation provides a more complete view of model behavior than relying on accuracy alone, particularly for identifying class-specific errors and differences in discriminative performance.
+---
+
+# 🏆 Results & Performance
+
+The final ResNet50 transfer-learning model was evaluated on **5,098 unseen MRI images** from the held-out test set.
+
+### 📊 Overall Performance
+
+| Metric | Score |
+|---|---:|
+| **Test Accuracy** | **74.07%** |
+| **Macro Precision** | **76.05%** |
+| **Macro Recall** | **75.88%** |
+| **Macro F1-score** | **75.93%** |
+| **Macro ROC-AUC** | **0.9273** |
+
+### 📋 Class-wise Performance
+
+| Class | Precision | Recall | F1-score |
+|---|---:|---:|---:|
+| **MildDemented** | 0.80 | 0.74 | 0.77 |
+| **ModerateDemented** | **0.98** | **1.00** | **0.99** |
+| **NonDemented** | 0.70 | 0.72 | 0.71 |
+| **VeryMildDemented** | 0.56 | 0.58 | 0.57 |
+
+### 📈 Class-wise ROC-AUC
+
+| Class | ROC-AUC |
+|---|---:|
+| **MildDemented** | **0.95** |
+| **ModerateDemented** | **1.00** |
+| **NonDemented** | **0.91** |
+| **VeryMildDemented** | **0.85** |
+
+### 🔍 Performance Insights
+
+The model demonstrates strong class-separation capability with a **0.9273 macro ROC-AUC**. The **ModerateDemented** class achieves the strongest classification performance, while **VeryMildDemented** presents the greatest challenge, with comparatively lower precision, recall, F1-score, and ROC-AUC.
+
+The difference in class-wise performance highlights the difficulty of distinguishing subtle patterns associated with the very mild stage and motivates further investigation into class-aware training strategies and more advanced architectures.
+---
