@@ -82,6 +82,8 @@ The sample grid shows MRI scans from all four classes, providing a visual verifi
 
 # 🔬 Machine Learning Pipeline
 
+The project follows an end-to-end medical image classification pipeline, starting from raw MRI images and progressing through dataset preparation, stratified partitioning, image preprocessing, model training, and comprehensive performance evaluation.
+
 ```text
                  Brain MRI Dataset
                         │
@@ -102,25 +104,28 @@ The sample grid shows MRI scans from all four classes, providing a visual verifi
         ┌───────────────┼───────────────┐
         ▼               ▼               ▼
      Training       Validation         Test
+     24,553           4,333           5,098
         │               │               │
         ▼               ▼               ▼
- Image Augmentation   Rescaling       Rescaling
-        │
-        ▼
- ImageDataGenerator
-        │
-        ▼
- ┌──────────────────────────────┐
- │                              │
- ▼                              ▼
-Baseline CNN             ResNet50 Transfer
-                         Learning + Fine-Tuning
- │                              │
- └──────────────┬───────────────┘
-                ▼
-          Model Evaluation
-                │
-                ▼
- Accuracy • Precision • Recall
- F1-score • Confusion Matrix
- ROC-AUC • ROC Curves
+ Augmentation        Rescaling       Rescaling
+        │               │               │
+        └───────────────┴───────────────┘
+                        ▼
+                ImageDataGenerator
+                        │
+             ┌──────────┴──────────┐
+             ▼                     ▼
+       Baseline CNN          ResNet50 Transfer
+                             Learning + Fine-Tuning
+             │                     │
+             └──────────┬──────────┘
+                        ▼
+                 Model Prediction
+                        │
+                        ▼
+              Comprehensive Evaluation
+                        │
+        ┌───────────────┼────────────────┐
+        ▼               ▼                ▼
+    Classification   Confusion        ROC-AUC
+      Metrics         Matrix           Curves
