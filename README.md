@@ -71,12 +71,13 @@ The images are organized into class-specific directories and converted into a st
 
 ## 📊 Dataset Visualization
 
-<p align="center">
-  <img src="assets/sample_mri_images.png" alt="Sample MRI Images" width="900"/>
-</p>
-
 The visualization step verifies that MRI images are loaded correctly and that the corresponding class labels are mapped properly before model training.
 
+<p align="center">
+  <img src="assets/sample_mri_images.png" alt="Sample Brain MRI Images" width="900"/>
+</p>
+
+The sample grid shows MRI scans from all four classes, providing a visual verification of the dataset labeling and image-loading pipeline.
 ---
 
 # 🔬 Machine Learning Pipeline
