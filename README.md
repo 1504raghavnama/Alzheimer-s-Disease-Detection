@@ -382,3 +382,34 @@ The model demonstrates strong class-separation capability with a **0.9273 macro 
 
 The difference in class-wise performance highlights the difficulty of distinguishing subtle patterns associated with the very mild stage and motivates further investigation into class-aware training strategies and more advanced architectures.
 ---
+# 🛠️ Tech Stack
+
+### Programming & Deep Learning
+
+# 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| **Language** | Python |
+| **Deep Learning** | TensorFlow, Keras |
+| **Models** | CNN, ResNet50, Transfer Learning |
+| **Data Processing** | NumPy, Pandas |
+| **Computer Vision** | OpenCV |
+| **Machine Learning / Evaluation** | Scikit-learn |
+| **Visualization** | Matplotlib, Seaborn |
+| **Development Environment** | Jupyter Notebook |
+
+### Core Techniques
+
+```text
+Computer Vision
+      │
+      ├── Image Preprocessing
+      ├── Data Augmentation
+      ├── CNN Feature Extraction
+      ├── Transfer Learning
+      ├── Partial Fine-Tuning
+      ├── Dropout Regularization
+      ├── Learning-Rate Scheduling
+      └── Multi-Class Classification
+```
