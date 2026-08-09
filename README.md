@@ -394,7 +394,6 @@ The difference in class-wise performance highlights the difficulty of distinguis
 | **Deep Learning** | TensorFlow, Keras |
 | **Models** | CNN, ResNet50, Transfer Learning |
 | **Data Processing** | NumPy, Pandas |
-| **Computer Vision** | OpenCV |
 | **Machine Learning / Evaluation** | Scikit-learn |
 | **Visualization** | Matplotlib, Seaborn |
 | **Development Environment** | Jupyter Notebook |
